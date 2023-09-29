@@ -9,7 +9,7 @@ paths = Dir.glob(pattern)
 paths.each { |file| require(file) }
 
 class Github < Thor
-  namespace 'samvera'
+  namespace "samvera"
   attr_reader :client_id, :login
 
   desc("auth", "Authenticate")
