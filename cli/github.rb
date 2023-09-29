@@ -8,8 +8,7 @@ pattern = File.join(dir_path, "..", "lib", "**", "*rb")
 paths = Dir.glob(pattern)
 paths.each { |file| require(file) }
 
-class Github < Thor
-  namespace "samvera"
+class Samvera::Github < Thor
   attr_reader :client_id, :login
 
   desc("auth", "Authenticate")

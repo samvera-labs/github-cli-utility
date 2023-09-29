@@ -59,5 +59,14 @@ module Samvera
         self.public_send(signature, value)
       end
     end
+
+    # `delegate` triggers strange behavior within Thor::CLI Classes
+    def client
+      owner.client
+    end
+
+    def create_pull_request_comment(body:, **options)
+      client.create_pull_request_comment(@repository.name, number, body, **options)
+    end
   end
 end
