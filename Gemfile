@@ -11,5 +11,6 @@ group :development, :test do
   gem "rspec", "~> 3.12"
   gem "rubocop-github", "~> 0.20.0"
   gem "rubocop-rspec", "~> 2.22"
+  gem "simplecov", "~> 0.21"
   gem "webmock", "~> 3.18"
 end

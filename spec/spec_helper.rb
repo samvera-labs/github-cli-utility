@@ -15,8 +15,12 @@
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+ENV["RAILS_ENV"] = "test"
+
 require "pry-byebug"
 require "webmock/rspec"
+require "simplecov"
+SimpleCov.start
 
 dir_path = File.dirname(__FILE__)
 pattern = File.join(dir_path, "..", "lib", "**", "*rb")
