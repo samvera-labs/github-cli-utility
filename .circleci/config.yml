@@ -32,7 +32,6 @@ jobs:
     working_directory: &root '~/github-cli-prototype'
     docker:
       - image: cimg/ruby:3.2
-    executor: ruby/default
     steps:
       - attach_workspace:
           at: *root
@@ -41,11 +40,21 @@ jobs:
           root: *root
           paths:
             - '*'
+  lint:
+    working_directory: *root
+    docker:
+      - image: cimg/ruby:3.2
+    steps:
+      - attach_workspace:
+          at: *root
+      - bundle_install
+      - run:
+          name: Lint using Rubocop
+          command: bundle exec rubocop
   test:
     working_directory: *root
     docker:
       - image: cimg/ruby:3.2
-    executor: ruby/default
     steps:
       - attach_workspace:
           at: *root
@@ -66,10 +75,12 @@ jobs:
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  ci: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  ci:
     jobs:
       - build
+      - lint:
+          requires:
+            - build
       - test:
           requires:
             - build
