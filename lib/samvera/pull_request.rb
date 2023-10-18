@@ -66,9 +66,17 @@ module Samvera
       owner.client
     end
 
+    def path
+      "#{owner.login}/#{@repository.name}"
+    end
+
     def create_pull_request_comment(**options)
-      base = "#{owner.login}/#{@repository.name}"
-      client.create_pull_request_review(base, number, **options)
+      client.create_pull_request_review(path, number, **options)
+    end
+
+    def add_labels_to_an_issue(labels)
+      #client.create_pull_request_review(base, number, **options)
+      client.add_labels_to_an_issue(path, number, labels)
     end
   end
 end
