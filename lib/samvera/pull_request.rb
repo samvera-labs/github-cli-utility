@@ -74,9 +74,14 @@ module Samvera
       client.create_pull_request_review(path, number, **options)
     end
 
-    def add_labels_to_an_issue(labels)
-      #client.create_pull_request_review(base, number, **options)
+    def add_labels(labels)
       client.add_labels_to_an_issue(path, number, labels)
+    end
+
+    def remove_labels(labels)
+      labels.each do |label|
+        client.remove_label(path, number, label)
+      end
     end
   end
 end
