@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 module Samvera
   class PullRequest
+    attr_reader :owner
     attr_accessor :active_lock_reason,
                   :assignee,
                   :assignees,
@@ -65,8 +66,9 @@ module Samvera
       owner.client
     end
 
-    def create_pull_request_comment(body:, **options)
-      client.create_pull_request_comment(@repository.name, number, body, **options)
+    def create_pull_request_comment(**options)
+      base = "#{owner.login}/#{@repository.name}"
+      client.create_pull_request_review(base, number, **options)
     end
   end
 end

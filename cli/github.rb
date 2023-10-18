@@ -164,12 +164,10 @@ class Samvera::Github < Thor
 
     def find_organization_by!(login:)
       org = session.find_organization_by(login:)
-      if org.nil?
-        error_message = "Failed to resolve the Org: #{login}"
-        raise(StandardError, error_message)
-      else
-        org
-      end
+      return org unless org.nil?
+
+      error_message = "Failed to resolve the Org: #{login}"
+      raise(StandardError, error_message)
     end
 
     def access_token

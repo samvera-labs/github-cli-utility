@@ -50,14 +50,11 @@ module Samvera
     end
 
     def find_repository_by!(name:, **options)
-      repository = find_repository_by(name: name, **options)
+      repository = find_repository_by(name:, **options)
+      return repository unless repository.nil?
 
-      if repository.nil?
-        error_message = "Failed to resolve the Repository: #{repo_name}"
-        raise(StandardError, error_message)
-      else
-        repository
-      end
+      error_message = "Failed to resolve the Repository: #{name}"
+      raise(StandardError, error_message)
     end
   end
 end

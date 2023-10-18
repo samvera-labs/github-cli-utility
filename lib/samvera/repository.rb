@@ -124,5 +124,17 @@ module Samvera
 
       PullRequest.build_from_hash(owner:, repository: self, values: response)
     end
+
+    def find_pull_request_by(number:, **options)
+      #base = "#{owner.login}/#{name}"
+      #@client.pull(@test_repo, @pull.number)
+      #response = client.pull(base, number)
+      #attrs = response.to_hash
+      #PullRequest.new(owner: owner, repository: self, **attrs)
+
+      all = pull_requests(**options)
+      filtered = all.select { |repo| repo.number == number.to_i }
+      filtered.first
+    end
   end
 end

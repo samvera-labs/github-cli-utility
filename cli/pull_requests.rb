@@ -22,6 +22,7 @@ class Samvera::Github::PullRequests < Samvera::Github
   option(:repo, required: true)
   option(:number, required: true)
   option(:comment, required: true)
+
   def comment
     # Build the client for the GitHub API
     build_client(netrc: options[:netrc], client_id: options[:client_id], login: options[:login])
@@ -31,11 +32,11 @@ class Samvera::Github::PullRequests < Samvera::Github
     say("Successfully authenticated as: #{user}", :green)
 
     org_login = options[:org]
-    organization = find_organization_by(login: org_login)
+    organization = find_organization_by!(login: org_login)
     say("Successfully resolved the Organization: #{organization.login}", :green)
 
     repo_name = options[:repo]
-    repository = organization.find_repository_by(name: repo_name)
+    repository = organization.find_repository_by!(name: repo_name)
     say("Successfully resolved the Repository: #{repository.name}", :green)
 
     pull_request_number = options[:number]
@@ -43,7 +44,9 @@ class Samvera::Github::PullRequests < Samvera::Github
     say("Successfully resolved the Pull Request: #{pull_request.number}", :green)
 
     comment_body = options[:comment]
-    pull_request.create_pull_request_comment(body: comment_body)
+    default_options = { event: "COMMENT", body: comment_body }
+
+    pull_request.create_pull_request_comment(**default_options)
   rescue Octokit::Unauthorized => authz_error
     say("Error: #{authz_error}", :red)
   end
@@ -63,9 +66,9 @@ class Samvera::Github::PullRequests < Samvera::Github
       session.organizations(**options)
     end
 
-    def find_organization_by(login:)
-      session.find_organization_by(login:)
-    end
+    #def find_organization_by(login:)
+    #  session.find_organization_by(login:)
+    #end
 
     def access_token
       @access_token ||= STDIN.getpass("Please enter your GitHub API personal access token:")
