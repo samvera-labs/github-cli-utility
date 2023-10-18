@@ -51,7 +51,7 @@ class Samvera::Github < Thor
   option(:client_id)
   option(:login)
 
-  option(:org, default: "samvera")
+  option(:org, required: true)
   def repos
     # Build the client for the GitHub API
     build_client(netrc: options[:netrc], client_id: options[:client_id], login: options[:login])
@@ -60,12 +60,22 @@ class Samvera::Github < Thor
     user
     say("Successfully authenticated as: #{user}", :green)
 
-    org_login = options[:org]
-    organization = find_organization_by(login: org_login)
-    say("Successfully resolved the Organization: #{organization.login}", :green)
+    if options.key?(:org)
+      org_login = options[:org]
+      organization = find_organization_by(login: org_login)
+      say("Successfully resolved the Organization: #{organization.login}", :green)
 
-    organization.repositories.each do |repo|
-      say("Repository: #{repo.name}", :green)
+      organization.repositories.each do |repo|
+        say("Repository: #{repo.name}", :green)
+      end
+    elsif options.key?(:owner)
+      owner_login = options[:owner]
+      owner = find_user_by(login: owner_login)
+      say("Successfully resolved the User: #{owner.login}", :green)
+
+      owner.repositories.each do |repo|
+        say("Repository: #{repo.name}", :green)
+      end
     end
   rescue Octokit::Unauthorized => authz_error
     say("Error: #{authz_error}", :red)
@@ -77,7 +87,7 @@ class Samvera::Github < Thor
   option(:client_id)
   option(:login)
 
-  option(:org, default: "samvera")
+  option(:org, required: true)
   option(:repo, required: true)
   def issues
     # Build the client for the GitHub API
@@ -108,7 +118,7 @@ class Samvera::Github < Thor
   option(:client_id)
   option(:login)
 
-  option(:org, default: "samvera")
+  option(:org, required: true)
   option(:repo, required: true)
   def pull_requests
     # Build the client for the GitHub API
@@ -119,11 +129,11 @@ class Samvera::Github < Thor
     say("Successfully authenticated as: #{user}", :green)
 
     org_login = options[:org]
-    organization = find_organization_by(login: org_login)
+    organization = find_organization_by!(login: org_login)
     say("Successfully resolved the Organization: #{organization.login}", :green)
 
     repo_name = options[:repo]
-    repository = organization.find_repository_by(name: repo_name)
+    repository = organization.find_repository_by!(name: repo_name)
     say("Successfully resolved the Repository: #{repository.name}", :green)
 
     repository.pull_requests.each do |pull_request|
@@ -150,6 +160,16 @@ class Samvera::Github < Thor
 
     def find_organization_by(login:)
       session.find_organization_by(login:)
+    end
+
+    def find_organization_by!(login:)
+      org = session.find_organization_by(login:)
+      if org.nil?
+        error_message = "Failed to resolve the Org: #{login}"
+        raise(StandardError, error_message)
+      else
+        org
+      end
     end
 
     def access_token

@@ -18,7 +18,7 @@ class Samvera::Github::PullRequests < Samvera::Github
   option(:client_id)
   option(:login)
 
-  option(:org, default: "samvera")
+  option(:org, required: true)
   option(:repo, required: true)
   option(:number, required: true)
   option(:comment, required: true)
