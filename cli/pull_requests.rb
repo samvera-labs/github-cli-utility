@@ -132,18 +132,6 @@ class Samvera::Github::PullRequests < Samvera::Github
       @client
     end
 
-    def session(**options)
-      @session ||= Samvera::Session.new(client: @client, **options)
-    end
-
-    def organizations(**options)
-      session.organizations(**options)
-    end
-
-    #def find_organization_by(login:)
-    #  session.find_organization_by(login:)
-    #end
-
     def access_token
       @access_token ||= STDIN.getpass("Please enter your GitHub API personal access token:")
     end

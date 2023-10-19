@@ -133,8 +133,8 @@ module Samvera
       filtered.first
     end
 
-    def create_label(name:, description: nil, color: nil)
-      Label.find_or_create_by(repository: self, name:, description:, color:)
+    def create_label(name:, color: nil)
+      Label.find_or_create_by(repository: self, name:, color:)
     end
   end
 end
