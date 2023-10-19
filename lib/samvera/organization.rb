@@ -48,5 +48,13 @@ module Samvera
       filtered = all.select { |repo| repo.name == name }
       filtered.first
     end
+
+    def find_repository_by!(name:, **options)
+      repository = find_repository_by(name:, **options)
+      return repository unless repository.nil?
+
+      error_message = "Failed to resolve the Repository: #{name}"
+      raise(StandardError, error_message)
+    end
   end
 end

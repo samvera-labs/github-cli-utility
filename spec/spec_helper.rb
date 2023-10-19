@@ -23,7 +23,7 @@ require "simplecov"
 SimpleCov.start
 
 dir_path = File.dirname(__FILE__)
-pattern = File.join(dir_path, "..", "lib", "**", "*rb")
+pattern = File.join(dir_path, "..", "cli", "**", "*rb")
 paths = Dir.glob(pattern)
 paths.each { |file| require(file) }
 
