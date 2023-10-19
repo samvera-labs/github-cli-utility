@@ -2,4 +2,5 @@
 require "thor"
 require "io/console"
 require_relative "cli/github.rb"
+require_relative "cli/labels.rb"
 require_relative "cli/pull_requests.rb"

@@ -111,30 +111,30 @@ module Samvera
       owner.client
     end
 
+    def path
+      "#{owner.login}/#{name}"
+    end
+
     def issues(**options)
-      base = "#{owner.login}/#{name}"
-      response = client.list_issues(base, **options)
+      response = client.list_issues(path, **options)
 
       Issue.build_from_hash(owner:, repository: self, values: response)
     end
 
     def pull_requests(**options)
-      base = "#{owner.login}/#{name}"
-      response = client.pull_requests(base, **options)
+      response = client.pull_requests(path, **options)
 
       PullRequest.build_from_hash(owner:, repository: self, values: response)
     end
 
     def find_pull_request_by(number:, **options)
-      #base = "#{owner.login}/#{name}"
-      #@client.pull(@test_repo, @pull.number)
-      #response = client.pull(base, number)
-      #attrs = response.to_hash
-      #PullRequest.new(owner: owner, repository: self, **attrs)
-
       all = pull_requests(**options)
       filtered = all.select { |repo| repo.number == number.to_i }
       filtered.first
+    end
+
+    def create_label(name:, description: nil, color: nil)
+      Label.find_or_create_by(repository: self, name:, description:, color:)
     end
   end
 end
