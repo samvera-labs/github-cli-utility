@@ -136,5 +136,11 @@ module Samvera
     def create_label(name:, color: nil)
       Label.find_or_create_by(repository: self, name:, color:)
     end
+
+    def delete_label(name:)
+      persisted = Label.find_by(repository: self, name:)
+      raise(StandardError, "Failed to resolve the label #{name} for the repository #{path}") if persisted.nil?
+      persisted.delete
+    end
   end
 end

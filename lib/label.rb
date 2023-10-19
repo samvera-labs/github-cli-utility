@@ -77,7 +77,7 @@ module Samvera
     end
 
     def delete
-      client.delete_label(repository.path, name)
+      client.delete_label!(repository.path, name)
       @persisted = false
       self
     end
