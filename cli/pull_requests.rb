@@ -125,8 +125,6 @@ class Samvera::Github::PullRequests < Samvera::Github
     say("error: #{authz_error}", :red)
   end
 
-
-
   no_commands do
 
     # `delegate` triggers strange behavior within Thor::CLI Classes
