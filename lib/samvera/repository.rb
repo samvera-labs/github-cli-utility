@@ -142,5 +142,22 @@ module Samvera
       raise(StandardError, "Failed to resolve the label #{name} for the repository #{path}") if persisted.nil?
       persisted.delete
     end
+
+    def create_project(name:, **attrs)
+      Project.find_or_create_by(repository: self, name:, **attrs)
+    end
+
+    def projects
+      Project.where(repository: self)
+    end
+
+    def project(name:)
+      Project.find_by(repository: self, name:)
+    end
+
+    def delete_project(name:)
+      persisted = project(name:)
+      persisted.delete
+    end
   end
 end
