@@ -2,6 +2,7 @@
 
 source "https://rubygems.org"
 
+gem "graphql-client", "~> 0.18"
 gem "netrc", "~> 0.11.0"
 gem "octokit", "~> 6.1"
 gem "thor", "~> 1.2"
