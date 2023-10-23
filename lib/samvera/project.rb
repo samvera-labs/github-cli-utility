@@ -24,16 +24,15 @@ module Samvera
     def create
       return self if persisted?
 
-      graphql_results = graphql_client.create_project(owner_id: owner.node_id, title: name)
+      graphql_results = graphql_client.create_project(owner_id: owner.node_id, repository_id: repository.node_id, title: name)
       self.node_id = graphql_results["id"]
       self.name = graphql_results["title"]
       @persisted = true
       reload
-      #graphql_reload
     end
 
     def delete
-      client.delete_project(id)
+      graphql_results = graphql_client.delete_project(owner_id: owner.node_id, title: name)
       @persisted = false
       self
     end

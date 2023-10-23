@@ -47,6 +47,11 @@ module Samvera
         request
       end
 
+      def schema_response
+        request = build_schema_request
+        http.connection.request(request)
+      end
+
       def build_graphql_request(query:, variables: nil, operation_name: nil)
         request = Net::HTTP::Post.new(@uri)
         request["Accept"] = "application/json"
@@ -60,11 +65,6 @@ module Samvera
         request.body = JSON.generate(body)
 
         request
-      end
-
-      def schema_response
-        request = build_schema_request
-        http.connection.request(request)
       end
 
       def execute_graphql_query(query:, variables: nil)
@@ -126,12 +126,10 @@ module Samvera
       #   ownerId: "OWNER_ID",
       #   title: "PROJECT_NAME"
       # }
-            # createProjectV2($input: ProjectInput!) {
       def create_project_mutation
-        # client.parse <<-GRAPHQL
         <<-GRAPHQL
-          mutation($ownerId: ID!, $title: String!) {
-            createProjectV2(input: { ownerId: $ownerId, title: $title }) {
+          mutation($ownerId: ID!, $title: String!, $repositoryId: ID!) {
+            createProjectV2(input: { ownerId: $ownerId, title: $title, repositoryId: $repositoryId }) {
               projectV2 {
                 id
                 title
@@ -141,11 +139,11 @@ module Samvera
         GRAPHQL
       end
 
-      def create_project(owner_id:, title:)
-        # result = SWAPI::Client.query(Hero::HeroFromEpisodeQuery, variables: {episode: "JEDI"}, context: {user_id: current_user_id})
+      def create_project(owner_id:, title:, repository_id:)
         variables = {
           ownerId: owner_id,
-          title:
+          title:,
+          repositoryId: repository_id
         }
         results = execute_graphql_query(query: create_project_mutation, variables:)
         # {"createProjectV2"=>{"projectV2"=>{"id"=>"PVT_kwDOBV7-Ic4AXONV", "title"=>"test3"}}
