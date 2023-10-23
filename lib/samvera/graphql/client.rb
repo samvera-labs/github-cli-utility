@@ -9,7 +9,7 @@ module Samvera
   module GraphQL
 
     class Client
-      MAX_NODES = 100
+      FIRST = 100
 
       def self.default_uri
         "https://api.github.com/graphql"
@@ -161,7 +161,7 @@ module Samvera
         <<-GRAPHQL
           query($login: String!) {
             organization(login: $login) {
-              projectsV2(first: #{MAX_NODES}) {
+              projectsV2(first: #{FIRST}) {
                 nodes {
                   closed
                   closedAt
@@ -202,7 +202,6 @@ module Samvera
           repositoryId: repository_id
         }
         results = execute_graphql_query(query: create_project_mutation, variables:)
-        # {"createProjectV2"=>{"projectV2"=>{"id"=>"PVT_kwDOBV7-Ic4AXONV", "title"=>"test3"}}
         create_project_v2 = results["createProjectV2"]
         project_v2 = create_project_v2["projectV2"]
         project_v2

@@ -10,8 +10,6 @@ module Samvera
     attr_accessor :closed_at
     attr_accessor :created_at
     attr_accessor :database_id
-    #attr_accessor :node_id
-    #attr_accessor :body
     attr_accessor :resource_path
     attr_accessor :short_description
     attr_accessor :title
@@ -35,9 +33,11 @@ module Samvera
         attrs["closed_at"] = graphql_node["closedAt"]
         attrs["created_at"] = graphql_node["createdAt"]
         attrs["database_id"] = graphql_node["databaseId"]
+
         # For consistency with the other models
         attrs["node_id"] = graphql_node["id"]
         attrs["id"] = graphql_node["number"]
+
         attrs["resource_path"] = graphql_node["resourcePath"]
         attrs["short_description"] = graphql_node["shortDescription"]
         attrs["title"] = graphql_node["title"]
@@ -45,21 +45,6 @@ module Samvera
 
         new(repository:, **attrs)
       end
-
-      #binding.pry
-      #response_json = repository.client.org_projects(repository.owner.login, **options)
-      #response_json.map do |object_json|
-      #  build_from_json(repository:, json: response_json)
-      #end
-
-      #organization(login: "ORGANIZATION") {
-      #projectsV2(first: 20) {
-      #  nodes {
-      #    id
-      #    title
-      #  }
-      #}
-      #}
     rescue Octokit::NotFound
       []
     end
