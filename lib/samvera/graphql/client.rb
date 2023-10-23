@@ -156,6 +156,18 @@ module Samvera
         GRAPHQL
       end
 
+      def add_project_item_by_id_mutation
+        <<-GRAPHQL
+          mutation($projectId: ID!, $contentId: ID!) {
+            addProjectV2ItemById(input: { projectId: $projectId contentId: $contentId }) {
+              item {
+                id
+              }
+            }
+          }
+        GRAPHQL
+      end
+
       # https://docs.github.com/en/graphql/reference/objects#projectv2
       def find_projects_by_org_query
         <<-GRAPHQL
@@ -205,6 +217,17 @@ module Samvera
         create_project_v2 = results["createProjectV2"]
         project_v2 = create_project_v2["projectV2"]
         project_v2
+      end
+
+      def add_project_item(project_id:, item_id:)
+        variables = {
+          projectId: project_id,
+          contentId: item_id
+        }
+        results = execute_graphql_query(query: add_project_item_by_id_mutation, variables:)
+        add_project_v2_item_by_id = results["addProjectV2ItemById"]
+        item = add_project_v2_item_by_id["item"]
+        item
       end
 
       def delete_project(project_id:)

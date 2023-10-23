@@ -62,6 +62,10 @@ module Samvera
       reload
     end
 
+    def add_item(item_node_id:)
+      graphql_client.add_project_item(project_id: self.node_id, item_id: item_node_id)
+    end
+
     def delete
       graphql_results = graphql_client.delete_project(project_id: self.node_id)
       @persisted = false
