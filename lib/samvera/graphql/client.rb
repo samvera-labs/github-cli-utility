@@ -39,7 +39,7 @@ module Samvera
         end
       end
 
-      def schema_request
+      def build_schema_request
         request = Net::HTTP::Get.new(@uri)
         request["Accept"] = "application/json"
         request["Content-Type"] = "application/json"
@@ -47,9 +47,40 @@ module Samvera
         request
       end
 
+      def build_graphql_request(query:, variables: nil, operation_name: nil)
+        request = Net::HTTP::Post.new(@uri)
+        request["Accept"] = "application/json"
+        request["Content-Type"] = "application/json"
+        request["Authorization"] = "bearer #{@api_token}"
+
+        body = {}
+        body["query"] = query
+        body["variables"] = variables unless variables.nil?
+        body["operationName"] = operation_name unless operation_name.nil?
+        request.body = JSON.generate(body)
+
+        request
+      end
+
       def schema_response
-        response = http.connection.request(schema_request)
-        response.body
+        request = build_schema_request
+        http.connection.request(request)
+      end
+
+      def execute_graphql_query(query:, variables: nil)
+        request = build_graphql_request(query:, variables:)
+        response = http.connection.request(request)
+        # Errors at the level of the HTTP
+        raise(StandardError, "HTTP error encountered: #{response.body}") if response.code != "200"
+        parsed = JSON.parse(response.body)
+        # Errors within the GraphQL query (these return a 200 status code)
+        if parsed.key?("errors")
+          errors = parsed["errors"].map { |error| error["message"] }.join(" ")
+          raise(StandardError, "GraphQL API error encountered: #{errors}")
+        end
+
+        response_data = parsed["data"]
+        response_data
       end
 
       def schema_cached?
@@ -95,10 +126,12 @@ module Samvera
       #   ownerId: "OWNER_ID",
       #   title: "PROJECT_NAME"
       # }
+            # createProjectV2($input: ProjectInput!) {
       def create_project_mutation
-        client.parse <<-GRAPHQL
-          mutation {
-            createProjectV2($input: ProjectInput!) {
+        # client.parse <<-GRAPHQL
+        <<-GRAPHQL
+          mutation($ownerId: ID!, $title: String!) {
+            createProjectV2(input: { ownerId: $ownerId, title: $title }) {
               projectV2 {
                 id
                 title
@@ -114,7 +147,11 @@ module Samvera
           ownerId: owner_id,
           title:
         }
-        client.query(create_project_mutation, variables:, context: @context)
+        results = execute_graphql_query(query: create_project_mutation, variables:)
+        # {"createProjectV2"=>{"projectV2"=>{"id"=>"PVT_kwDOBV7-Ic4AXONV", "title"=>"test3"}}
+        create_project_v2 = results["createProjectV2"]
+        project_v2 = create_project_v2["projectV2"]
+        project_v2
       end
     end
   end
