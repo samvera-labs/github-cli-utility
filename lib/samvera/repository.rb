@@ -143,20 +143,20 @@ module Samvera
       persisted.delete
     end
 
-    def create_project(name:, **attrs)
-      Project.find_or_create_by(repository: self, name:, **attrs)
+    def create_project(title:, **attrs)
+      Project.find_or_create_by(repository: self, title:, **attrs)
     end
 
     def projects
       Project.where(repository: self)
     end
 
-    def project(name:)
-      Project.find_by(repository: self, name:)
+    def project(title:)
+      Project.find_by(repository: self, title:)
     end
 
-    def delete_project(name:)
-      persisted = project(name:)
+    def delete_project(title:)
+      persisted = project(title:)
       persisted.delete
     end
   end

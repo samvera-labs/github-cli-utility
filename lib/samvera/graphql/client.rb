@@ -9,6 +9,8 @@ module Samvera
   module GraphQL
 
     class Client
+      MAX_NODES = 100
+
       def self.default_uri
         "https://api.github.com/graphql"
       end
@@ -51,6 +53,8 @@ module Samvera
         request = build_schema_request
         http.connection.request(request)
       end
+
+
 
       def build_graphql_request(query:, variables: nil, operation_name: nil)
         request = Net::HTTP::Post.new(@uri)
@@ -139,6 +143,58 @@ module Samvera
         GRAPHQL
       end
 
+      def delete_project_mutation
+        <<-GRAPHQL
+          mutation($projectId: ID!) {
+            deleteProjectV2(input: { projectId: $projectId }) {
+              projectV2 {
+                id
+                title
+              }
+            }
+          }
+        GRAPHQL
+      end
+
+      # https://docs.github.com/en/graphql/reference/objects#projectv2
+      def find_projects_by_org_query
+        <<-GRAPHQL
+          query($login: String!) {
+            organization(login: $login) {
+              projectsV2(first: #{MAX_NODES}) {
+                nodes {
+                  closed
+                  closedAt
+                  createdAt
+                  databaseId
+                  id
+                  number
+                  public
+                  readme
+                  resourcePath
+                  shortDescription
+                  template
+                  title
+                  updatedAt
+                  url
+                }
+              }
+            }
+          }
+        GRAPHQL
+      end
+
+      def find_projects_by_org(login:)
+        variables = {
+          login:
+        }
+        results = execute_graphql_query(query: find_projects_by_org_query, variables:)
+        create_project_v2 = results["organization"]
+        projects_v2 = create_project_v2["projectsV2"]
+        nodes = projects_v2["nodes"]
+        nodes
+      end
+
       def create_project(owner_id:, title:, repository_id:)
         variables = {
           ownerId: owner_id,
@@ -148,6 +204,16 @@ module Samvera
         results = execute_graphql_query(query: create_project_mutation, variables:)
         # {"createProjectV2"=>{"projectV2"=>{"id"=>"PVT_kwDOBV7-Ic4AXONV", "title"=>"test3"}}
         create_project_v2 = results["createProjectV2"]
+        project_v2 = create_project_v2["projectV2"]
+        project_v2
+      end
+
+      def delete_project(project_id:)
+        variables = {
+          projectId: project_id
+        }
+        results = execute_graphql_query(query: delete_project_mutation, variables:)
+        create_project_v2 = results["deleteProjectV2"]
         project_v2 = create_project_v2["projectV2"]
         project_v2
       end
