@@ -1,15 +1,11 @@
 # frozen_string_literal: true
+require_relative "repository_node"
+
 module Samvera
-  class Label
-    attr_reader :repository
+  class Label < RepositoryNode
     attr_accessor :color,
                   :default,
-                  :description,
-                  :id,
-                  :name,
-                  :node_id,
-                  :persisted,
-                  :url
+                  :description
 
     def self.build_from_json(repository:, json:)
       attrs = json.to_hash
