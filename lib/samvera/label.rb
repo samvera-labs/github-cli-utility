@@ -1,8 +1,9 @@
 # frozen_string_literal: true
-require_relative "repository_node"
+
+require_relative "repository/node"
 
 module Samvera
-  class Label < RepositoryNode
+  class Label < Repository::Node
     attr_accessor :color,
                   :default,
                   :description

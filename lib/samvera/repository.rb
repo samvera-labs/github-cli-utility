@@ -133,6 +133,12 @@ module Samvera
       filtered.first
     end
 
+    def find_issue_by(number:, **options)
+      all = issues(**options)
+      filtered = all.select { |repo| repo.number == number.to_i }
+      filtered.first
+    end
+
     def create_label(name:, color: nil)
       Label.find_or_create_by(repository: self, name:, color:)
     end

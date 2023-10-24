@@ -46,7 +46,7 @@ class Samvera::Github::PullRequests < Samvera::Github
     comment_body = options[:comment]
     default_options = { event: "COMMENT", body: comment_body }
 
-    pull_request.create_pull_request_comment(**default_options)
+    pull_request.create_comment(**default_options)
   rescue Octokit::Unauthorized => authz_error
     say("Error: #{authz_error}", :red)
   end

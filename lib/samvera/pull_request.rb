@@ -70,7 +70,7 @@ module Samvera
       "#{owner.login}/#{@repository.name}"
     end
 
-    def create_pull_request_comment(**options)
+    def create_comment(**options)
       client.create_pull_request_review(path, number, **options)
     end
 

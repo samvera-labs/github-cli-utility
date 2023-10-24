@@ -1,9 +1,11 @@
 # frozen_string_literal: true
+
+require_relative "../rest/node"
 require_relative "client"
 
 module Samvera
   module GraphQL
-    class Node
+    class Node < REST::Node
 
       def self.build_graphql_client(api_token:)
         built = Samvera::GraphQL::Client.new(api_token:)

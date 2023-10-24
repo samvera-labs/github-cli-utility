@@ -1,9 +1,9 @@
 # frozen_string_literal: true
-require_relative "repository_node"
-require_relative "graphql/client"
+
+require_relative "repository/node"
 
 module Samvera
-  class Project < RepositoryNode
+  class Project < Repository::Node
     attr_accessor :body
     attr_accessor :closed_at
     attr_accessor :created_at
