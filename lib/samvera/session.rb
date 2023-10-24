@@ -18,5 +18,13 @@ module Samvera
       filtered = organizations.select { |org| org.login == login }
       filtered.first
     end
+
+    def find_user_by(login:)
+      User.find_by(client: @client, login:)
+    end
+
+    def find_team_by(organization:, login:)
+      Team.find_by(client: @client, org: organization, login:)
+    end
   end
 end

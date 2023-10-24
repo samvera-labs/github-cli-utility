@@ -166,8 +166,20 @@ class Samvera::Github < Thor
       org = session.find_organization_by(login:)
       return org unless org.nil?
 
-      error_message = "Failed to resolve the Org: #{login}"
+      error_message = "Failed to resolve the Organization: #{login}"
       raise(StandardError, error_message)
+    end
+
+    def find_user_by(login:)
+      session.find_user_by(login:)
+    end
+
+    def find_team_by(organization:, login:)
+      session.find_team_by(organization:, login:)
+    end
+
+    def find_user_or_team_by(organization:, login:)
+      find_team_by(organization:, login:) || find_user_by(login:)
     end
 
     def access_token

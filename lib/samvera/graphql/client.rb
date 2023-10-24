@@ -163,7 +163,6 @@ module Samvera
             addProjectV2ItemById(input: { projectId: $projectId contentId: $contentId }) {
               item {
                 id
-          #{'      '}
               }
             }
           }
@@ -177,6 +176,40 @@ module Samvera
           mutation($itemId: ID!, $projectId: ID!) {
             deleteProjectV2Item(input: { itemId: $itemId projectId: $projectId }) {
               deletedItemId
+            }
+          }
+        GRAPHQL
+      end
+
+      # https://docs.github.com/en/graphql/reference/mutations#addassigneestoassignable
+      def add_assignees_mutation
+        <<-GRAPHQL
+          mutation($assignableId: ID!, $assigneeIds: [ID!]!) {
+            addAssigneesToAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
+              assignable {
+                assignees(first: #{FIRST}) {
+                  nodes {
+                    id
+                  }
+                }
+              }
+            }
+          }
+        GRAPHQL
+      end
+
+      # https://docs.github.com/en/graphql/reference/mutations#removeassigneesfromassignable
+      def remove_assignees_mutation
+        <<-GRAPHQL
+          mutation($assignableId: ID!, $assigneeIds: [ID!]!) {
+            removeAssigneesFromAssignable(input: { assignableId: $assignableId, assigneeIds: $assigneeIds }) {
+              assignable {
+                assignees(first: #{FIRST}) {
+                  nodes {
+                    id
+                  }
+                }
+              }
             }
           }
         GRAPHQL
@@ -224,6 +257,10 @@ module Samvera
           }
         GRAPHQL
       end
+
+      # Public methods for queries
+
+      ## Projects
 
       def find_projects_by_org(login:)
         variables = {
@@ -278,6 +315,23 @@ module Samvera
         create_project_v2 = results["deleteProjectV2"]
         project_v2 = create_project_v2["projectV2"]
         project_v2
+      end
+
+      ## Issue/Pull Request Assignment
+      def add_assignees(node_id:, assignee_ids:)
+        variables = {
+          assignableId: node_id,
+          assigneeIds: assignee_ids
+        }
+        results = execute_graphql_query(query: add_assignees_mutation, variables:)
+      end
+
+      def remove_assignees(node_id:, assignee_ids:)
+        variables = {
+          assignableId: node_id,
+          assigneeIds: assignee_ids
+        }
+        results = execute_graphql_query(query: remove_assignees_mutation, variables:)
       end
     end
   end

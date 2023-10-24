@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "graphql/node"
+require_relative "../repository"
+require_relative "../graphql/node"
 
 module Samvera
-  class RepositoryNode < GraphQL::Node
+  class Repository::Node < GraphQL::Node
     attr_reader :repository
-    attr_accessor :id,
-                  :name,
-                  :node_id,
-                  :persisted,
-                  :url
 
     def self.build_from_json(repository:, json:)
       attrs = json.to_hash
@@ -61,4 +57,4 @@ module Samvera
       self.class.find_by(repository:, name:)
     end
   end
-end
+  end
