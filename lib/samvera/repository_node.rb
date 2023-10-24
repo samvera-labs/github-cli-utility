@@ -1,6 +1,9 @@
 # frozen_string_literal: true
+
+require_relative "graphql/node"
+
 module Samvera
-  class RepositoryNode
+  class RepositoryNode < GraphQL::Node
     attr_reader :repository
     attr_accessor :id,
                   :name,
