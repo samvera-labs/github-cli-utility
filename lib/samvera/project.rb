@@ -10,6 +10,7 @@ module Samvera
     attr_accessor :closed_at
     attr_accessor :created_at
     attr_accessor :database_id
+    attr_accessor :items
     attr_accessor :resource_path
     attr_accessor :short_description
     attr_accessor :title
@@ -43,6 +44,10 @@ module Samvera
         attrs["title"] = graphql_node["title"]
         attrs["updated_at"] = graphql_node["updatedAt"]
 
+        items = graphql_node["items"]
+        item_nodes = items["nodes"]
+        attrs["items"] = item_nodes
+
         new(repository:, **attrs)
       end
     rescue Octokit::NotFound
@@ -64,6 +69,19 @@ module Samvera
 
     def add_item(item_node_id:)
       graphql_client.add_project_item(project_id: self.node_id, item_id: item_node_id)
+    end
+
+    def find_item_id_for(node_id:)
+      selected = items.select { |item| item["content"]["id"] == node_id }
+      return if selected.empty?
+
+      item = selected.first
+      item["id"]
+    end
+
+    def remove_pull_request(node_id:)
+      item_node_id = find_item_id_for(node_id:)
+      graphql_client.delete_project_item(project_id: self.node_id, item_id: item_node_id)
     end
 
     def delete

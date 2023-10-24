@@ -162,7 +162,18 @@ module Samvera
             addProjectV2ItemById(input: { projectId: $projectId contentId: $contentId }) {
               item {
                 id
+          #{'      '}
               }
+            }
+          }
+        GRAPHQL
+      end
+
+      def delete_project_item_mutation
+        <<-GRAPHQL
+          mutation($itemId: ID!, $projectId: ID!) {
+            deleteProjectV2Item(input: { itemId: $itemId projectId: $projectId }) {
+              deletedItemId
             }
           }
         GRAPHQL
@@ -189,6 +200,17 @@ module Samvera
                   title
                   updatedAt
                   url
+                  items(first: #{FIRST}) {
+                    nodes {
+                      id
+                      type
+                      content {
+                        ... on PullRequest {
+                          id
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -227,6 +249,18 @@ module Samvera
         results = execute_graphql_query(query: add_project_item_by_id_mutation, variables:)
         add_project_v2_item_by_id = results["addProjectV2ItemById"]
         item = add_project_v2_item_by_id["item"]
+        item
+      end
+
+      def delete_project_item(item_id:, project_id:)
+        variables = {
+          itemId: item_id,
+          projectId: project_id
+        }
+        results = execute_graphql_query(query: delete_project_item_mutation, variables:)
+        # {"deleteProjectV2Item"=>{"deletedItemId"=>"PVTI_lADOBV7-Ic4AXOkFzgKH5pg"}}
+        delete_project_v2_item = results["deleteProjectV2Item"]
+        item = delete_project_v2_item["item"]
         item
       end
 
