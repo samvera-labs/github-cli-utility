@@ -14,18 +14,24 @@ module Samvera
     attr_accessor :title
     attr_accessor :updated_at
 
-    def self.where(repository:, **options)
-      graphql_client = Samvera::GraphQL::Client.new(api_token: repository.client.access_token)
-      graphql_nodes = graphql_client.find_projects_by_org(login: repository.owner.login)
+    def self.find_children_by(api_token:, login:, **attrs)
+      graphql_client = build_graphql_client(api_token:)
+      graphql_nodes = graphql_client.find_projects_by_org(login:)
 
       selected = graphql_nodes.select do |graphql_node|
         matches = false
-        options.each_pair do |key, value|
+        attrs.each_pair do |key, value|
           graphql_key = key.to_s
           matches = true if !matches && graphql_node.key?(graphql_key) && graphql_node[graphql_key] == value
         end
         matches
       end
+
+      selected
+    end
+
+    def self.where(repository:, **attrs)
+      selected = find_children_by(api_token: repository.client.access_token, login: repository.owner.login, **attrs)
 
       selected.map do |graphql_node|
         attrs = {}
@@ -48,12 +54,6 @@ module Samvera
 
         new(repository:, **attrs)
       end
-    rescue Octokit::NotFound
-      []
-    end
-
-    def graphql_client
-      @graphql_client ||= Samvera::GraphQL::Client.new(api_token: client.access_token)
     end
 
     def create
