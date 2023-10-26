@@ -1,0 +1,20 @@
+---
+on:
+  pull_request:
+  issue_comment:
+jobs:
+  pr_agent_job:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: write
+    name: Run the CodiumAI PR-Agent in response to comments on every issue and pull request
+    steps:
+      # Please see https://github.com/marketplace/codiumai-pr-agent
+      - name: Invoke the GitHub Action (Downloads the Docker image and runs the container)
+        id: pr-agent
+        uses: Codium-ai/pr-agent@main
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
