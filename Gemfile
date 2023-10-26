@@ -2,6 +2,8 @@
 
 source "https://rubygems.org"
 
+gem "faraday", "~> 2.7"
+gem "faraday-retry", "~> 2.2"
 gem "graphql-client", "~> 0.18"
 gem "netrc", "~> 0.11.0"
 gem "octokit", "~> 6.1"

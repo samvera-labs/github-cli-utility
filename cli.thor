@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require "thor"
 require "io/console"
+require_relative "cli/gems.rb"
 require_relative "cli/github.rb"
 require_relative "cli/issues.rb"
 require_relative "cli/labels.rb"
